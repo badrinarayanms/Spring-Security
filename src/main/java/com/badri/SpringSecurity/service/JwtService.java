@@ -37,13 +37,6 @@ public class JwtService {
         return Keys.hmacShaKeyFor(byet);
     }
 
-//    public String extractUserName(String token) {
-//        return "";
-//    }
-//
-//    public boolean valicateToken(String token, UserDetails userDetails) {
-//        return true;
-//    }
 
     public String extractUserName(String token) {
         // extract the username from jwt token

@@ -1,5 +1,6 @@
 package com.badri.SpringSecurity.config;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,6 +19,9 @@ import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -38,14 +42,21 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable()) // Disable CSRF for stateless APIs
+                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth ->
                         auth
                                 .requestMatchers("/register","/login")
                                 .permitAll()
                                 .anyRequest().authenticated() // All requests need login
                 )
-                .httpBasic(Customizer.withDefaults()) // Use Basic Auth
+                .logout(logout -> logout.disable())
+//                .logout(logout -> logout
+//                        .logoutUrl("/logout")                      // Default anyway
+//                        .logoutSuccessHandler((request, response, auth) -> {
+//                            response.setStatus(HttpServletResponse.SC_OK);
+//                        })
+//                        .deleteCookies("jwt")                      // ✅ Clear your JWT cookie
+//                )
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS) // No sessions
                 )
@@ -58,6 +69,8 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return  authenticationConfiguration.getAuthenticationManager();
     }
+
+
 
 //    @Bean
 //    public UserDetailsService userDetailsService() {
